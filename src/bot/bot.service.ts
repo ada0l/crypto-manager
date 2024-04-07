@@ -156,7 +156,9 @@ export class BotService {
       });
   }
 
-  public async getAssetsProfitByUserId(userId: number): Promise<GeneralInfo> {
+  public async getAssetsProfitByUserId(
+    userId: number,
+  ): Promise<GeneralInfo | null> {
     const raw = (await this.knex('user_transactions')
       .with('assets_with_price', (qb) => this.getAssetWithPriceQuery(qb))
       .with('user_transactions', (qb) =>
@@ -177,6 +179,9 @@ export class BotService {
         'user_transactions.asset_id',
       )
       .first()) as any;
+    if (raw?.total_price == null) {
+      return null;
+    }
     return {
       totalPrice: raw?.total_price,
       totalSpent: raw?.total_spent,

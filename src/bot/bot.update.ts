@@ -61,6 +61,9 @@ export class BotUpdate {
     const transactions = await this.botService.getAllTransactionsByUserId(
       ctx.from.id,
     );
+    if (transactions.length == 0) {
+      return "You don't have transactions to export";
+    }
     const content = transactions
       .map(
         (transaction) =>
@@ -72,22 +75,25 @@ export class BotUpdate {
 
   @Command('general_info')
   async onGeneralInfoCommand(@Ctx() ctx: Context) {
-    const assetsInfo = await this.botService.getAssetsProfitByUserId(
+    const assetsProfit = await this.botService.getAssetsProfitByUserId(
       ctx.from.id,
     );
-    ctx.reply(
+    if (!assetsProfit) {
+      return "You don't have transactions to show information";
+    }
+    await ctx.reply(
       Format.fmt(
         Format.bold('Total spent'),
         ': ',
-        assetsInfo.totalSpent.toFixed(2),
+        assetsProfit.totalSpent.toFixed(2),
         ' USD \n',
         Format.bold('Total price'),
         ': ',
-        assetsInfo.totalPrice.toFixed(2),
+        assetsProfit.totalPrice.toFixed(2),
         ' USD \n',
         Format.bold('Profit'),
         ': ',
-        assetsInfo.profitPercent.toFixed(2),
+        assetsProfit.profitPercent.toFixed(2),
         '%',
       ),
     );
