@@ -130,7 +130,6 @@ export class BotUpdate {
     const content: string = response.data;
     const transactions: Transaction[] = content
       .split('\n')
-      .slice(1, -1)
       .map((row) => row.split(',').join(' '))
       .map((row) => new TransactionPipe().transform(row))
       .map((transaction: Transaction) => ({
