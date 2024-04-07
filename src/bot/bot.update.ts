@@ -16,7 +16,11 @@ import { Transaction } from 'src/interfaces';
 import { Format, Input, Markup, Telegraf } from 'telegraf';
 import { Context } from '../interfaces/';
 import { BotService } from './bot.service';
-import { Update as UpdateType } from 'telegraf/typings/core/types/typegram';
+import {
+  CallbackQuery,
+  Update as UpdateType,
+  Message as MessageType,
+} from 'telegraf/typings/core/types/typegram';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 
@@ -107,10 +111,13 @@ export class BotUpdate {
 
   @Action(/delete-transaction:(\d+)/)
   async onDeleteTransactionAction(
-    @Ctx() ctx: Context & { update: UpdateType.CallbackQueryUpdate },
+    @Ctx()
+    ctx: Context & {
+      update: UpdateType.CallbackQueryUpdate<CallbackQuery.DataQuery>;
+    },
   ) {
     const transactionId = parseInt(
-      ctx.update.callback_query['data'].split(':').at(1),
+      ctx.update.callback_query.data.split(':').at(1),
     );
     const ownership = await this.botService.checkTransactionOwnership(
       transactionId,
@@ -123,8 +130,13 @@ export class BotUpdate {
   }
 
   @On('document')
-  async onDocument(@Ctx() ctx: Context & { update: UpdateType.MessageUpdate }) {
-    const { file_id: fileId } = ctx.update.message['document'];
+  async onDocument(
+    @Ctx()
+    ctx: Context & {
+      update: UpdateType.MessageUpdate<MessageType.DocumentMessage>;
+    },
+  ) {
+    const { file_id: fileId } = ctx.update.message.document;
     const fileUrl = await ctx.telegram.getFileLink(fileId);
     const response = await lastValueFrom(this.httpService.get(fileUrl.href));
     const content: string = response.data;
