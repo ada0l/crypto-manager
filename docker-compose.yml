@@ -12,12 +12,28 @@ services:
       - postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    healthcheck:
+      test: pg_isready -p 5432
+      interval: 10s
+      timeout: 5s
+      retries: 100
 
   bot:
     build: ./
     env_file: .env
     restart: always
     command: ["npm", "run", "start:prod"]
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+
+  migration:
+    build: ./
+    env_file: .env
+    command: ["npx", "knex", "migrate:latest"]
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres:
