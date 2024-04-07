@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { lastValueFrom } from 'rxjs';
@@ -16,7 +17,7 @@ export class UpdaterService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // this.updateCron();
+    this.updateCron();
   }
 
   async fetchCoinTopPage(limit: number, page: number): Promise<CoinInfo[]> {
@@ -69,6 +70,7 @@ export class UpdaterService implements OnModuleInit {
     });
   }
 
+  @Cron(CronExpression.EVERY_HOUR)
   async updateCron(): Promise<void> {
     this.logger.log('Start update');
     const [coinLimit, coinPages] = [
