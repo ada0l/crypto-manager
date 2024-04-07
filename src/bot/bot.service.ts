@@ -57,6 +57,15 @@ export class BotService {
   ): Promise<number[]> {
     let result: number[];
     await this.knex.transaction(async (tx) => {
+      await tx
+        .table('assets')
+        .insert(
+          transactions.map((transaction) => ({
+            symbol: transaction.assetSymbol,
+          })),
+        )
+        .onConflict(tx.raw('(symbol)'))
+        .ignore();
       const valuesQueries = transactions.map((transaction) =>
         tx.raw(`(?::timestamp, ?, ?, ?::varchar, ?)`, [
           transaction.createdAt,
