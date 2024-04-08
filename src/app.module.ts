@@ -4,7 +4,7 @@ import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { BotModule } from './bot/bot.module';
 import { TelegrafModule } from 'nestjs-telegraf';
-import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -29,6 +29,7 @@ import { HttpModule } from '@nestjs/axios';
       token: process.env.TELEGRAM_TOKEN,
       include: [BotModule],
     }),
+    ScheduleModule.forRoot(),
     UpdaterModule,
     BotModule,
   ],
