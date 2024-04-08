@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
@@ -7,7 +7,7 @@ import { lastValueFrom } from 'rxjs';
 import { CoinInfo } from 'src/interfaces';
 
 @Injectable()
-export class UpdaterService implements OnModuleInit {
+export class UpdaterService {
   private readonly logger = new Logger(UpdaterService.name);
   private readonly cryptoCompareUrl = 'https://min-api.cryptocompare.com';
 
@@ -15,10 +15,6 @@ export class UpdaterService implements OnModuleInit {
     @InjectConnection() private readonly knex: Knex,
     private readonly httpService: HttpService,
   ) {}
-
-  onModuleInit() {
-    this.updateCron();
-  }
 
   async fetchCoinTopPage(limit: number, page: number): Promise<CoinInfo[]> {
     const response = await lastValueFrom(
