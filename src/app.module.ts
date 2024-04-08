@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { BotModule } from './bot/bot.module';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UsersModule } from './users/users.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -32,8 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     ScheduleModule.forRoot(),
     UpdaterModule,
     BotModule,
+    UsersModule,
+    TransactionsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
